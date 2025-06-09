@@ -254,7 +254,7 @@ def inject_hex_copy_actions(form, popup, form_type):
 
 def copy_bytes_py2():
     """
-    Copy selected bytes to clipboard
+    Copy selected bytes to clipboard (Python 2, spaced and uppercase)
     """
     if using_ida7api:
         start = idc.read_selection_start()
@@ -263,7 +263,8 @@ def copy_bytes_py2():
             ea = idc.here()
             start = idaapi.get_item_head(ea)
             end = idaapi.get_item_end(ea)
-        data = idc.get_bytes(start, end - start).encode('hex')
+        raw = idc.get_bytes(start, end - start)
+        data = ' '.join("{:02X}".format(ord(b)) for b in raw)
         print("Bytes copied: %s" % data)
         copy_to_clip(data)
     else:
@@ -273,15 +274,16 @@ def copy_bytes_py2():
             ea = idc.here()
             start = idaapi.get_item_head(ea)
             end = idaapi.get_item_end(ea)
-        data = idc.GetManyBytes(start, end-start).encode('hex')
+        raw = idc.GetManyBytes(start, end-start)
+        data = ' '.join("{:02X}".format(ord(b)) for b in raw)
         print("Bytes copied: %s" % data)
         copy_to_clip(data)
-    return 
+
 
 
 def copy_bytes_py3():
     """
-    Copy selected bytes to clipboard
+    Copy selected bytes to clipboard (Python 3, spaced and uppercase)
     """
     if using_ida7api:
         start = idc.read_selection_start()
@@ -290,10 +292,9 @@ def copy_bytes_py3():
             ea = idc.here()
             start = idaapi.get_item_head(ea)
             end = idaapi.get_item_end(ea)
-        # fix encode bug reference 
-        # https://stackoverflow.com/questions/6624453/whats-the-correct-way-to-convert-bytes-to-a-hex-string-in-python-3
-        data = idc.get_bytes(start, end - start).hex()
-        print ("Bytes copied: %s" % data)
+        raw = idc.get_bytes(start, end - start)
+        data = ' '.join(f"{b:02X}" for b in raw)
+        print("Bytes copied: %s" % data)
         copy_to_clip(data)
     else:
         start = idc.SelStart()
@@ -302,10 +303,11 @@ def copy_bytes_py3():
             ea = idc.here()
             start = idaapi.get_item_head(ea)
             end = idaapi.get_item_end(ea)
-        data = idc.GetManyBytes(start, end-start).hex()
-        print( "Bytes copied: %s" % data)
+        raw = idc.GetManyBytes(start, end-start)
+        data = ' '.join(f"{ord(b):02X}" for b in raw)
+        print("Bytes copied: %s" % data)
         copy_to_clip(data)
-    return 
+
 
 
 #------------------------------------------------------------------------------
